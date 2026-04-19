@@ -1,0 +1,18 @@
+CLAUDE.md
+STATE.md
+SPEC.md
+SPEC*.md
+0[0-9]-*.md
+adrs/
+
+# Indexed projects each have their own git repo. Keep them out of this
+# outer repo so they don't surface as untracked or embedded-repo warnings.
+# Append new project dirs here as they are added to the portfolio.
+alidade/
+
+node_modules/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
