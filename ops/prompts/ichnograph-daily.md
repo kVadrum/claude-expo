@@ -19,6 +19,7 @@ Read, in order:
 - `CHANGELOG.md` — especially any `[Unreleased]` section.
 - `git log --oneline -10` — recent work; don't duplicate.
 - `CLAUDE.md` "Open questions" section — a curated backlog.
+- `claude-expo/ops/morning-log.md` — what past sessions did.
 - Skim `tests/` coverage and `src/` structure.
 
 ### 2. Decide
@@ -37,8 +38,9 @@ AVOID:
 - Anything you honestly can't finish + test in 15 min.
 - Schema-breaking changes (`schemaVersion: 1` is frozen).
 
-If nothing clears the bar today, SKIP. Proceed to step 5 as `skipped`.
-No busywork commits.
+If nothing clears the bar today, SKIP. Still write a session report
+(step 5) explaining what you considered and why you passed. No busywork
+commits.
 
 ### 3. Execute (target: 10 min)
 
@@ -55,16 +57,67 @@ No busywork commits.
 - The guardrails hook blocks `main` / `npm publish` / `rm -rf` outside
   the project. Trust the hook.
 
-### 5. Log (always — shipped, skipped, or blocked)
+### 5. Session report (ALWAYS — shipped, skipped, or blocked)
 
-Append ONE line to
-`/home/kv/dev/projects/claude-expo/ops/morning-log.md`:
+Produce TWO artifacts in the claude-expo repo:
 
-- Shipped: `YYYY-MM-DD ichnograph <short-sha> <one-line summary> duration=Nmin`
-- Skipped: `YYYY-MM-DD ichnograph skipped — <brief reason>`
-- Blocked: `YYYY-MM-DD ichnograph blocked — <what got in the way>`
+**A. Per-session report.** Write to
+`claude-expo/ops/sessions/YYYY-MM-DD-ichnograph.md` using this template:
 
-Then commit and `git push origin dev` in the claude-expo repo.
+```markdown
+# ichnograph — YYYY-MM-DD
+
+- Outcome: shipped | skipped | blocked
+- Duration: Nmin
+- Commit: <short-sha or n/a>
+
+## Considered
+- Candidate 1 — why it was on the table
+- Candidate 2 — why it was on the table
+- …
+
+## Picked (and why)
+One paragraph. What you chose and the reasoning. If skipped/blocked,
+state that here and explain the judgment call.
+
+## Changes
+- path/to/file.ts — one line describing the change
+- …
+(omit this section if skipped/blocked)
+
+## Checks
+- `npm test`: pass/fail (note counts if useful)
+- `npm run build`: clean/fail
+(omit if skipped/blocked)
+
+## Diff summary
+2–4 sentences in plain prose on what the change does and why it's
+safe. Call out any subtlety a reviewer should check first.
+(omit if skipped/blocked)
+
+## Followups / blockers
+- Anything you noticed but did not address. Keep it to things a human
+  should actually look at — not a wishlist.
+```
+
+Keep the report honest and terse. Prefer cutting sections to padding
+them. A skipped session with a one-paragraph "Picked (and why)" is
+fine — it's still valuable signal.
+
+**B. Morning log index entry.** Append ONE line to
+`claude-expo/ops/morning-log.md`:
+
+- Shipped: `YYYY-MM-DD ichnograph shipped <short-sha> — "<summary>" → sessions/YYYY-MM-DD-ichnograph.md`
+- Skipped: `YYYY-MM-DD ichnograph skipped — "<brief reason>" → sessions/YYYY-MM-DD-ichnograph.md`
+- Blocked: `YYYY-MM-DD ichnograph blocked — "<what got in the way>" → sessions/YYYY-MM-DD-ichnograph.md`
+
+### 6. Commit the report
+
+In the `claude-expo` repo (NOT the ichnograph repo):
+- Stage the new session file and the morning-log update.
+- Commit with a one-line message like
+  `morning-log: 2026-04-20 ichnograph <outcome>`.
+- `git push origin dev`.
 
 ## HARD CONSTRAINTS
 
@@ -72,3 +125,4 @@ Then commit and `git push origin dev` in the claude-expo repo.
 - Never push to `main`. Never `npm publish`. Never create remotes.
 - Don't refactor broadly. One focused change.
 - Exit cleanly whether you shipped, skipped, or blocked.
+- Always produce the session report, even on skip/block.
