@@ -32,3 +32,7 @@ build.
 
 Early. One active project (`ichnograph/`), more in planning. Index in
 [INDEX.md](./INDEX.md).
+
+---
+
+© 2026 KeMeK Network
