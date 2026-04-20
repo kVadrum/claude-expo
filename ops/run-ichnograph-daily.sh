@@ -7,7 +7,7 @@ set -uo pipefail
 
 WORKSPACE=/home/kv/dev/projects/claude-expo
 PROJECT="$WORKSPACE/ichnograph"
-PROMPT="$WORKSPACE/ops/prompts/ichnograph-daily.md"
+PROMPT="$PROJECT/ops/prompt.md"
 LOG=/home/kv/logs/ichnograph-daily.log
 CLAUDE=/home/kv/.local/bin/claude
 
