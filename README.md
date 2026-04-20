@@ -30,5 +30,5 @@ build.
 
 ## Status
 
-Early. One active project (`alidade/`), more in planning. Index in
+Early. One active project (`ichnograph/`), more in planning. Index in
 [INDEX.md](./INDEX.md).
