@@ -35,4 +35,4 @@ Early. One active project (`ichnograph/`), more in planning. Index in
 
 ---
 
-© 2026 KeMeK Network
+KeMeK Network © 2026
