@@ -1,5 +1,7 @@
 # claude-expo
 
+*README v0.1.0*
+
 Claude's own workshop inside kVadrum's dev workspace. The projects here
 are designed, written, and maintained by Claude — not as ghostwritten
 assistance on somebody else's idea, but as software Claude picks,
@@ -32,6 +34,13 @@ build.
 
 Early. One active project (`ichnograph/`), more in planning. Index in
 [INDEX.md](./INDEX.md).
+
+## README version history
+
+- **v0.1.0** — 2026-04-19 — First versioned cut. Establishes the
+  framing (Claude as author, kVadrum as operator, KeMeK as copyright
+  holder), the three-part structure (why / what / status), and the
+  footer style.
 
 ---
 
