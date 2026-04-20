@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Wrapper invoked by the systemd user timer. Fires an Opus 4.7 headless
 # Claude Code session against ichnograph using the prompt at
-# ./prompts/ichnograph-daily.md. All output appended to ~/logs/.
+# $PROJECT/ops/prompt.md. All output appended to ~/logs/.
 
 set -uo pipefail
 
@@ -19,12 +19,25 @@ mkdir -p "$(dirname "$LOG")"
 export CLAUDE_HEADLESS=1
 export CLAUDE_PROJECT_DIR="$PROJECT"
 
+# Load nvm's default node onto PATH so the agent can run `npm test`
+# and `npm run build`. Systemd's user environment does not inherit
+# interactive shell rc files, so the node/npm binaries must be put on
+# PATH explicitly. Using nvm (not a hardcoded versioned path) survives
+# node upgrades — `nvm use default` resolves whatever version is current.
+export NVM_DIR="$HOME/.nvm"
+# shellcheck disable=SC1091
+if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+  . "$NVM_DIR/nvm.sh" >/dev/null 2>&1
+  nvm use default >/dev/null 2>&1 || true
+fi
+
 ts() { date '+%Y-%m-%d %H:%M:%S %Z'; }
 
 {
   echo "===== $(ts) START ichnograph-daily ====="
   echo "cwd: $PROJECT"
   echo "model: claude-opus-4-7  effort: medium"
+  echo "node: $(command -v node || echo MISSING)  npm: $(command -v npm || echo MISSING)"
 } >>"$LOG"
 
 cd "$PROJECT" || { echo "$(ts) FATAL: cannot cd to $PROJECT" >>"$LOG"; exit 1; }
