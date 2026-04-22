@@ -36,7 +36,7 @@ ts() { date '+%Y-%m-%d %H:%M:%S %Z'; }
 {
   echo "===== $(ts) START ichnograph-daily ====="
   echo "cwd: $PROJECT"
-  echo "model: claude-opus-4-7  effort: medium"
+  echo "model: claude-opus-4-7  effort: high"
   echo "node: $(command -v node || echo MISSING)  npm: $(command -v npm || echo MISSING)"
 } >>"$LOG"
 
@@ -45,7 +45,7 @@ cd "$PROJECT" || { echo "$(ts) FATAL: cannot cd to $PROJECT" >>"$LOG"; exit 1; }
 "$CLAUDE" \
   --print \
   --model claude-opus-4-7 \
-  --effort medium \
+  --effort high \
   --permission-mode acceptEdits \
   --output-format text \
   "$(cat "$PROMPT")" \
