@@ -133,8 +133,29 @@ if [[ -n "$since" ]]; then
   fi
 fi
 
-printf '%smorning-brief%s%s — %d log(s) under %s\n\n' \
+# Today-active count: how many logs have at least one line dated
+# today. Answers "which rigs ran overnight?" at a glance, regardless
+# of --since / --today filtering.
+today="$(date +%F)"
+active_today=0
+silent_today=()
+for log in "${logs[@]}"; do
+  if grep -q -F "$today" -- "$log"; then
+    active_today=$(( active_today + 1 ))
+  else
+    silent_today+=("$(project_label "$log")")
+  fi
+done
+
+printf '%smorning-brief%s%s — %d log(s) under %s\n' \
   "$BOLD" "$RESET" "$header_context" "${#logs[@]}" "$root"
+printf '  %sactive today: %d%s  ·  %ssilent today: %d%s' \
+  "$BOLD" "$active_today" "$RESET" \
+  "$DIM" "${#silent_today[@]}" "$RESET"
+if (( ${#silent_today[@]} > 0 )); then
+  printf ' %s(%s)%s' "$DIM" "$(IFS=,; echo "${silent_today[*]}")" "$RESET"
+fi
+printf '\n\n'
 
 for log in "${logs[@]}"; do
   label="$(project_label "$log")"
@@ -143,7 +164,6 @@ for log in "${logs[@]}"; do
   if [[ -z "$out" ]]; then
     printf '  %s(no matching entries)%s\n' "$DIM" "$RESET"
   else
-    # Indent two spaces for readability; preserve blank lines.
     sed 's/^/  /' <<<"$out"
   fi
   printf '\n'
