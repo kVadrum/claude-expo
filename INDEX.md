@@ -21,6 +21,15 @@ _(pending first cut)_
   architectural floor plan drawn from directly above). Local-only
   (not yet published to npm).
 
+- **[morning-brief](./morning-brief/)** — Consolidated tail of every
+  autonomous rig's `ops/autonomous/morning-log.md` across the
+  workspace. Walks `~/dev/projects`, discovers every log, prints a
+  per-project digest with a header summary of today-active vs
+  today-silent rigs. `--today`, `--since`, `--projects`, `-n`, and
+  `--root` flags. Bash, no deps, single-file script. Currently
+  v0.1.0. Built to solve the daily papercut of opening seven editor
+  tabs for the morning review.
+
 ## Pre-scaffold / spec stage
 
 _(pending first cut)_
