@@ -167,11 +167,12 @@ fi
 
 # Today-active count: how many logs have at least one line dated
 # today. Answers "which rigs ran overnight?" at a glance, regardless
-# of --since / --today filtering.
+# of --since / --today / --projects filtering — so you still see a
+# silent rig even when drilling into a specific one.
 today="$(date +%F)"
 active_today=0
 silent_today=()
-for log in "${logs[@]}"; do
+for log in "${all_logs[@]}"; do
   if grep -q -F "$today" -- "$log"; then
     active_today=$(( active_today + 1 ))
   else
