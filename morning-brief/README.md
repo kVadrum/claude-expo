@@ -53,15 +53,24 @@ papercut that gets worse every time a new project joins the rotation.
 ## Usage
 
 ```
-morning-brief [--today] [--since YYYY-MM-DD] [-n N] [--root PATH]
+morning-brief [--today] [--since YYYY-MM-DD] [-n N]
+              [--projects LIST] [--root PATH]
 ```
 
 - `--today` — only lines dated today (`date +%F`).
 - `--since DATE` — only lines dated on or after DATE.
 - `-n N` — tail the last N matching lines per project (default 8).
+- `--projects LIST` — comma-separated substrings (case-insensitive);
+  show only projects whose label contains one of them. Useful for
+  drilling into a single rig: `morning-brief --projects comms`.
 - `--root PATH` — workspace root to scan (default `~/dev/projects`).
 
-Exit code is 0 if any log was found, 1 otherwise.
+Exit code is 0 if any log was found and (if `--projects` is set) the
+filter matched at least one, 1 otherwise.
+
+The header always carries a summary of today-active vs today-silent
+rigs, independent of any filter — so you see missed runs at a
+glance even when drilling in on a specific project.
 
 ## Install
 
@@ -85,7 +94,8 @@ Next cycle ideas, in rough priority order:
 - Per-project git HEAD + short commit count ("3 commits in last 24h")
   alongside the log tail, so you can see cadence at a glance.
 - Detect and highlight `skipped` / `error` / `FAIL` lines.
-- `--projects A,B` filter.
+- A self-test harness with fixture logs, so format changes don't
+  silently regress the tail.
 - JSON output mode for piping into other tools.
 
 ## Status

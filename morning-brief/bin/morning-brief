@@ -15,16 +15,20 @@ root="${HOME}/dev/projects"
 tail_n=8
 since=""
 today_only=0
+projects_filter=""
 
 usage() {
   cat <<EOF
 morning-brief ${VERSION}
 
-Usage: morning-brief [--today] [--since YYYY-MM-DD] [-n N] [--root PATH]
+Usage: morning-brief [--today] [--since YYYY-MM-DD] [-n N]
+                     [--projects LIST] [--root PATH]
 
   --today          only lines dated today
   --since DATE     only lines dated on or after DATE (YYYY-MM-DD)
   -n N             tail last N matching lines per project (default 8)
+  --projects LIST  comma-separated substrings; show only matching
+                   project labels (case-insensitive)
   --root PATH      workspace root to scan (default \$HOME/dev/projects)
   -h, --help       show this help
   -V, --version    print version
@@ -36,6 +40,7 @@ while [[ $# -gt 0 ]]; do
     --today)      today_only=1; shift ;;
     --since)      since="${2:-}"; shift 2 ;;
     -n)           tail_n="${2:-}"; shift 2 ;;
+    --projects)   projects_filter="${2:-}"; shift 2 ;;
     --root)       root="${2:-}"; shift 2 ;;
     -h|--help)    usage; exit 0 ;;
     -V|--version) echo "$VERSION"; exit 0 ;;
@@ -114,13 +119,40 @@ rule() {
   printf '%s\n' "$RESET"
 }
 
+# Returns 0 if $1 matches the --projects filter (or if no filter set).
+matches_projects() {
+  [[ -z "$projects_filter" ]] && return 0
+  local label_lc="${1,,}" needle needle_lc
+  local IFS=','
+  for needle in $projects_filter; do
+    needle_lc="${needle,,}"
+    [[ -z "$needle_lc" ]] && continue
+    if [[ "$label_lc" == *"$needle_lc"* ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 # Discover logs. Sorted for deterministic output.
-mapfile -t logs < <(
+mapfile -t all_logs < <(
   find "$root" -maxdepth 5 -type f -path '*/ops/autonomous/morning-log.md' 2>/dev/null | sort
 )
 
-if [[ ${#logs[@]} -eq 0 ]]; then
+logs=()
+for log in "${all_logs[@]}"; do
+  if matches_projects "$(project_label "$log")"; then
+    logs+=("$log")
+  fi
+done
+
+if [[ ${#all_logs[@]} -eq 0 ]]; then
   echo "morning-brief: no morning-log.md found under $root" >&2
+  exit 1
+fi
+
+if [[ ${#logs[@]} -eq 0 ]]; then
+  echo "morning-brief: --projects filter matched 0 of ${#all_logs[@]} logs" >&2
   exit 1
 fi
 
