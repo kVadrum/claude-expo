@@ -77,36 +77,27 @@ project_label() {
   printf '%s' "$rel"
 }
 
-# Filter a log's lines to date-prefixed ones, optionally >= $since.
-# If no date lines exist, emit a raw tail.
+# Filter a log's lines for display.
+#
+#   No --since   → raw tail of the last N non-blank lines.
+#                  Robust across every log format (date-prefixed,
+#                  time-prefixed, bulleted, headered).
+#
+#   --since set  → only lines containing an ISO date >= $since,
+#                  tailed to N. ISO dates are lex-sortable, so
+#                  string compare is correct.
 filter_log() {
   local log="$1"
-  # Date pattern anywhere near the start of the line, allowing
-  # bullet, hash-header, or bare forms:
-  #   2026-04-23 ...
-  #   - 2026-04-23 ...
-  #   ## 2026-04-23 ...
-  local date_rx='^(##[[:space:]]*|-[[:space:]]*)?(2[0-9]{3}-[0-9]{2}-[0-9]{2})'
-  local matched
-  matched="$(grep -E "$date_rx" -- "$log" 2>/dev/null || true)"
-
-  if [[ -z "$matched" ]]; then
-    tail -n "$tail_n" -- "$log"
+  if [[ -z "$since" ]]; then
+    grep -v '^[[:space:]]*$' -- "$log" | tail -n "$tail_n"
     return
   fi
-
-  if [[ -n "$since" ]]; then
-    # Extract the date from each line and compare lexicographically.
-    # ISO dates are lex-sortable, so string compare is correct.
-    awk -v since="$since" '
-      match($0, /2[0-9]{3}-[0-9]{2}-[0-9]{2}/) {
-        d = substr($0, RSTART, RLENGTH)
-        if (d >= since) print $0
-      }
-    ' <<<"$matched" | tail -n "$tail_n"
-  else
-    tail -n "$tail_n" <<<"$matched"
-  fi
+  awk -v since="$since" '
+    match($0, /2[0-9]{3}-[0-9]{2}-[0-9]{2}/) {
+      d = substr($0, RSTART, RLENGTH)
+      if (d >= since) print $0
+    }
+  ' "$log" | tail -n "$tail_n"
 }
 
 # Horizontal rule that fits the terminal (or 64 cols off-tty).

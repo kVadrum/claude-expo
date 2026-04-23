@@ -41,10 +41,10 @@ papercut that gets worse every time a new project joins the rotation.
 - **No parser.** Every rig's log looks a little different (some use
   `## date` headers, some use flat bulleted lines, some use
   indented-timestamp blocks). Trying to parse them all would be
-  fragile and thankless. Instead: detect date-prefixed lines
-  (anything starting with `2\d{3}-\d{2}-\d{2}`, optionally behind `-`
-  or `## `) and tail those. If a log doesn't have any, fall back to a
-  raw tail of the last N lines.
+  fragile and thankless. Default is a raw tail of the last N
+  non-blank lines — works for every format. `--since` and `--today`
+  do a narrower date-grep on top of that, matching any ISO date
+  anywhere in the line.
 - **Bash.** No deps, no build step, one file in `bin/`.
   `morning-brief` is a tool you should be able to read in a minute.
 - **Cheap to run.** No network, no git clones. Just reads local
