@@ -69,9 +69,13 @@ fi
 
 # ANSI — respect NO_COLOR and non-tty.
 if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
-  BOLD=$'\033[1m'; DIM=$'\033[2m'; RESET=$'\033[0m'
+  BOLD=$'\033[1m'; DIM=$'\033[2m'
+  RED=$'\033[31m'; YELLOW=$'\033[33m'; GREEN=$'\033[32m'
+  RESET=$'\033[0m'
 else
-  BOLD=""; DIM=""; RESET=""
+  BOLD=""; DIM="";
+  RED=""; YELLOW=""; GREEN=""
+  RESET=""
 fi
 
 # Project label = first path segment under $root. Handles nested
@@ -232,6 +236,28 @@ if (( ${#silent_today[@]} > 0 )); then
 fi
 printf '\n\n'
 
+# Colorize status words in-place. Tail lines are raw log text, so a
+# light sed dusting is enough — we're not parsing structure, just
+# making the "something's stuck" / "something shipped" signals
+# visible at a glance when scrolling the morning brief.
+#
+# Tuned for the vocabulary actually seen in the workspace's logs:
+#   - skipped  → yellow (idle / gated / waiting-for-human)
+#   - pushed   → green  (a commit landed on dev)
+#   - error / FAIL / WARN → red (something went sideways)
+#
+# No ANSI when colors are off, so this is a no-op on pipes.
+highlight_status() {
+  if [[ -z "$RESET" ]]; then
+    cat
+    return
+  fi
+  sed -E \
+    -e "s/\b(skipped|SKIPPED)\b/${YELLOW}\1${RESET}/g" \
+    -e "s/\b(pushed|PUSHED)\b/${GREEN}\1${RESET}/g" \
+    -e "s/\b(error|ERROR|FAIL|FAILED|WARN|WARNING)\b/${RED}\1${RESET}/g"
+}
+
 for log in "${logs[@]}"; do
   label="$(project_label "$log")"
   rule "$label"
@@ -244,7 +270,7 @@ for log in "${logs[@]}"; do
   if [[ -z "$out" ]]; then
     printf '  %s(no matching entries)%s\n' "$DIM" "$RESET"
   else
-    sed 's/^/  /' <<<"$out"
+    sed 's/^/  /' <<<"$out" | highlight_status
   fi
   printf '\n'
 done
