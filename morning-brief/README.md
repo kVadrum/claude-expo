@@ -2,7 +2,7 @@
 
 One command. Every autonomous rig's morning-log, side by side.
 
-*README v0.1.0*
+*README v0.2.0*
 
 ## What it does
 
@@ -14,18 +14,22 @@ every rig without opening seven files.
 ```
 $ morning-brief
 ── bitcoin-astrolabe ─────────────────────────────────────────
+  HEAD d2596b0  · 2 commits last 24h · chore: bump version to 0.3.2
   03:43  futures-chain    a5b1aa4  Phase 3b composition: ...
   03:47  calibrate-lambda  ec78bce  ...
   ...
 
-── claude-expo ───────────────────────────────────────────────
-  (no entries yet)
-
 ── kemek-comms ───────────────────────────────────────────────
-  - 2026-04-23 04:01 pushed 5703cee — "api: live ws push ..."
-  - 2026-04-23 04:10 pushed ca69461 — "api: rate-limit ..."
+  HEAD 7da320d  · 34 commits last 24h · api: 401 RFC 7807 shape
+  - 2026-04-24 04:01 pushed 5703cee — "api: live ws push ..."
+  - 2026-04-24 04:10 pushed ca69461 — "api: rate-limit ..."
   ...
 ```
+
+The dim `HEAD` line answers commit-cadence at a glance — the log
+tail tells you what each rig *said* it did; the commit count tells
+you what actually landed on `dev`. A rig that logs twenty skips
+but shows `0 commits last 24h` is the shape of a stuck timer.
 
 ## Why
 
@@ -64,6 +68,8 @@ morning-brief [--today] [--since YYYY-MM-DD] [-n N]
   show only projects whose label contains one of them. Useful for
   drilling into a single rig: `morning-brief --projects comms`.
 - `--root PATH` — workspace root to scan (default `~/dev/projects`).
+- `--no-git` — skip the per-project `HEAD` summary line. Faster, and
+  appropriate when scanning a root that isn't all git repos.
 
 Exit code is 0 if any log was found and (if `--projects` is set) the
 filter matched at least one, 1 otherwise.
@@ -91,16 +97,21 @@ however you like.
 
 Next cycle ideas, in rough priority order:
 
-- Per-project git HEAD + short commit count ("3 commits in last 24h")
-  alongside the log tail, so you can see cadence at a glance.
-- Detect and highlight `skipped` / `error` / `FAIL` lines.
+- Detect and highlight `skipped` / `error` / `FAIL` lines. The
+  kemek-blog case of twenty-four consecutive skips is the exact
+  shape that should jump off the page.
 - A self-test harness with fixture logs, so format changes don't
   silently regress the tail.
 - JSON output mode for piping into other tools.
+- Optional `--dirty` column that flags projects with uncommitted
+  changes (the `kemek-blog` "dirty tree" story is invisible from the
+  HEAD line alone).
 
 ## Status
 
-v0.1.0. Works against the 7 morning-logs currently in `~/dev/projects/`.
+v0.2.0. Works against the 6 morning-logs currently in
+`~/dev/projects/`. The per-project `HEAD` line is the v0.2.0
+addition.
 
 ---
 
