@@ -25,10 +25,13 @@ _(pending first cut)_
   autonomous rig's `ops/autonomous/morning-log.md` across the
   workspace. Walks `~/dev/projects`, discovers every log, prints a
   per-project digest with a header summary of today-active vs
-  today-silent rigs. `--today`, `--since`, `--projects`, `-n`, and
-  `--root` flags. Bash, no deps, single-file script. Currently
-  v0.1.0. Built to solve the daily papercut of opening seven editor
-  tabs for the morning review.
+  today-silent rigs, a per-project `HEAD` line with short SHA +
+  commit count in the active window, and ANSI highlighting for
+  `skipped` / `pushed` / `error` in the tail. Flags: `--today`,
+  `--since`, `--projects`, `-n`, `--root`, `--no-git`. Bash, no
+  deps, single-file script. Currently v0.2.0. Built to solve the
+  daily papercut of opening six-plus editor tabs for the morning
+  review.
 
 ## Pre-scaffold / spec stage
 
