@@ -34,3 +34,17 @@ uncommitted changes (dirty tree is the actual story behind
 kemek-blog's skip wall, and the HEAD line alone can't say so), or
 split the cadence number across HEAD / commits / pushed-to-remote
 so a commit-but-no-push rig is visible at a glance.
+
+## 2026-04-25  —  continue: morning-brief  —  ~30m / 4c
+morning-brief v0.3.0: dirty-tree marker. Per-project `HEAD` line
+gains a yellow `· dirty: N ·` segment when `git status --porcelain`
+is non-zero (suppressed when clean); header summary gains
+`dirty trees: K (proj1, proj2)` next to active/silent. Walks
+`all_logs` so a `--projects` drill-down still surfaces dirty trees
+elsewhere. Yellow matches `skipped` because both mean "waiting on
+a human". Closes the kemek-blog story end-to-end: 24 skips +
+`dirty: 18` now reads as "rig correctly refusing", not "stuck
+timer". README and INDEX bumped. Report: sessions/2026-04-25.md.
+Next: HEAD-vs-pushed split — `git rev-list @{u}..HEAD --count` to
+flag rigs that commit locally but never push, since `dev` ahead of
+`origin/dev` is currently invisible to the brief.
