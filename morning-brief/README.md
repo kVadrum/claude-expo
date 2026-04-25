@@ -2,7 +2,7 @@
 
 One command. Every autonomous rig's morning-log, side by side.
 
-*README v0.2.0*
+*README v0.3.0*
 
 ## What it does
 
@@ -13,23 +13,29 @@ every rig without opening seven files.
 
 ```
 $ morning-brief
+morning-brief — 6 log(s) under /home/kv/dev/projects
+  active today: 5  ·  silent today: 1 (kemek-digest)  ·  dirty trees: 1 (kemek-blog)
+
 ── bitcoin-astrolabe ─────────────────────────────────────────
   HEAD d2596b0  · 2 commits last 24h · chore: bump version to 0.3.2
   03:43  futures-chain    a5b1aa4  Phase 3b composition: ...
   03:47  calibrate-lambda  ec78bce  ...
   ...
 
-── kemek-comms ───────────────────────────────────────────────
-  HEAD 7da320d  · 34 commits last 24h · api: 401 RFC 7807 shape
-  - 2026-04-24 04:01 pushed 5703cee — "api: live ws push ..."
-  - 2026-04-24 04:10 pushed ca69461 — "api: rate-limit ..."
+── kemek-blog ────────────────────────────────────────────────
+  HEAD e119cc2  · 0 commits last 24h · dirty: 18 · ops: 2026-04-24 01:46 session report (skipped)
+  - 2026-04-23 04:18 (skipped)
+  - 2026-04-24 01:46 (skipped)
   ...
 ```
 
 The dim `HEAD` line answers commit-cadence at a glance — the log
 tail tells you what each rig *said* it did; the commit count tells
 you what actually landed on `dev`. A rig that logs twenty skips
-but shows `0 commits last 24h` is the shape of a stuck timer.
+but shows `0 commits last 24h` *and* `dirty: 18` is the shape of a
+rig correctly refusing to act on a tree it can't touch — a
+different problem from a stuck timer, and one the morning brief
+now distinguishes.
 
 ## Why
 
@@ -75,8 +81,10 @@ Exit code is 0 if any log was found and (if `--projects` is set) the
 filter matched at least one, 1 otherwise.
 
 The header always carries a summary of today-active vs today-silent
-rigs, independent of any filter — so you see missed runs at a
-glance even when drilling in on a specific project.
+rigs and a count of dirty trees (with project list), independent of
+any filter — so you see missed runs and stuck trees at a glance even
+when drilling in on a specific project. The dirty-tree count is
+suppressed by `--no-git`.
 
 ## Install
 
@@ -97,21 +105,20 @@ however you like.
 
 Next cycle ideas, in rough priority order:
 
-- Detect and highlight `skipped` / `error` / `FAIL` lines. The
-  kemek-blog case of twenty-four consecutive skips is the exact
-  shape that should jump off the page.
+- Split the cadence number into HEAD-commits / pushed-to-remote, so
+  a rig that commits locally but never pushes (the `dev` vs
+  `origin/dev` divergence) is visible at a glance.
 - A self-test harness with fixture logs, so format changes don't
   silently regress the tail.
 - JSON output mode for piping into other tools.
-- Optional `--dirty` column that flags projects with uncommitted
-  changes (the `kemek-blog` "dirty tree" story is invisible from the
-  HEAD line alone).
+- Distinguish dirty kinds — modified-tracked vs untracked vs staged
+  — when the count alone is too coarse to triage from.
 
 ## Status
 
-v0.2.0. Works against the 6 morning-logs currently in
-`~/dev/projects/`. The per-project `HEAD` line is the v0.2.0
-addition.
+v0.3.0. Works against the 6 morning-logs currently in
+`~/dev/projects/`. The dirty-tree marker (per-project segment +
+header summary) is the v0.3.0 addition.
 
 ---
 
