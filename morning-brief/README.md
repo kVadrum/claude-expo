@@ -2,7 +2,7 @@
 
 One command. Every autonomous rig's morning-log, side by side.
 
-*README v0.3.0*
+*README v0.4.0*
 
 ## What it does
 
@@ -14,12 +14,16 @@ every rig without opening seven files.
 ```
 $ morning-brief
 morning-brief — 6 log(s) under /home/kv/dev/projects
-  active today: 5  ·  silent today: 1 (kemek-digest)  ·  dirty trees: 1 (kemek-blog)
+  active today: 5  ·  silent today: 1 (kemek-digest)  ·  unpushed: 1 (claude-expo)  ·  dirty trees: 1 (kemek-blog)
 
 ── bitcoin-astrolabe ─────────────────────────────────────────
   HEAD d2596b0  · 2 commits last 24h · chore: bump version to 0.3.2
   03:43  futures-chain    a5b1aa4  Phase 3b composition: ...
   03:47  calibrate-lambda  ec78bce  ...
+  ...
+
+── claude-expo ───────────────────────────────────────────────
+  HEAD 09c2e7b  · 5 commits last 24h · unpushed: 17 · dirty: 1 · claude-expo-daily: ...
   ...
 
 ── kemek-blog ────────────────────────────────────────────────
@@ -35,7 +39,13 @@ you what actually landed on `dev`. A rig that logs twenty skips
 but shows `0 commits last 24h` *and* `dirty: 18` is the shape of a
 rig correctly refusing to act on a tree it can't touch — a
 different problem from a stuck timer, and one the morning brief
-now distinguishes.
+distinguishes.
+
+The cyan `unpushed: N` segment closes a different blind spot: a
+rig that commits cleanly but never pushes. `dev` ahead of
+`origin/dev` was previously invisible — every other signal could
+look healthy while the work hadn't actually left the box. The
+brief now flags it both per-project and in the header.
 
 ## Why
 
@@ -81,10 +91,11 @@ Exit code is 0 if any log was found and (if `--projects` is set) the
 filter matched at least one, 1 otherwise.
 
 The header always carries a summary of today-active vs today-silent
-rigs and a count of dirty trees (with project list), independent of
-any filter — so you see missed runs and stuck trees at a glance even
-when drilling in on a specific project. The dirty-tree count is
-suppressed by `--no-git`.
+rigs, a count of unpushed branches, and a count of dirty trees (each
+with the project list), independent of any filter — so you see
+missed runs, unpushed work, and stuck trees at a glance even when
+drilling in on a specific project. The unpushed and dirty-tree
+counts are both suppressed by `--no-git`.
 
 ## Install
 
@@ -105,20 +116,22 @@ however you like.
 
 Next cycle ideas, in rough priority order:
 
-- Split the cadence number into HEAD-commits / pushed-to-remote, so
-  a rig that commits locally but never pushes (the `dev` vs
-  `origin/dev` divergence) is visible at a glance.
 - A self-test harness with fixture logs, so format changes don't
   silently regress the tail.
 - JSON output mode for piping into other tools.
 - Distinguish dirty kinds — modified-tracked vs untracked vs staged
   — when the count alone is too coarse to triage from.
+- Highlight the *opposite* of unpushed too: rigs whose `origin/dev`
+  is ahead of local (someone pushed from another machine and the
+  local clone hasn't pulled). Less common in this workspace but
+  cheap to add once the upstream-aware path exists.
 
 ## Status
 
-v0.3.0. Works against the 6 morning-logs currently in
-`~/dev/projects/`. The dirty-tree marker (per-project segment +
-header summary) is the v0.3.0 addition.
+v0.4.0. Works against the 6 morning-logs currently in
+`~/dev/projects/`. The v0.4.0 addition is the unpushed-commit
+marker — per-project cyan segment plus header summary — closing
+the `dev` ahead of `origin/dev` blind spot.
 
 ---
 
