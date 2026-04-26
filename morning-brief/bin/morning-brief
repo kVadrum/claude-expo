@@ -251,19 +251,32 @@ for log in "${all_logs[@]}"; do
   fi
 done
 
-# Dirty-tree count across all_logs (not just the filtered set) — same
-# rationale as silent_today: a --projects drill-down should not hide
-# a dirty tree elsewhere in the workspace.
+# Dirty-tree and unpushed counts across all_logs (not just the
+# filtered set) — same rationale as silent_today: a --projects
+# drill-down should not hide a dirty tree or an unpushed branch
+# elsewhere in the workspace. Both pass through a single git walk so
+# we don't shell out twice per project.
 dirty_total=0
 dirty_projects=()
+unpushed_total=0
+unpushed_projects=()
 if [[ "$show_git" -eq 1 ]] && command -v git >/dev/null 2>&1; then
   for log in "${all_logs[@]}"; do
     project_dir="${log%/ops/autonomous/morning-log.md}"
     git -C "$project_dir" rev-parse --is-inside-work-tree >/dev/null 2>&1 || continue
+
     n="$(git -C "$project_dir" status --porcelain 2>/dev/null | wc -l)"
     if [[ "${n:-0}" -gt 0 ]]; then
       dirty_total=$(( dirty_total + 1 ))
       dirty_projects+=("$(project_label "$log")")
+    fi
+
+    if git -C "$project_dir" rev-parse --abbrev-ref --symbolic-full-name '@{u}' >/dev/null 2>&1; then
+      ahead="$(git -C "$project_dir" rev-list --count '@{u}..HEAD' 2>/dev/null)"
+      if [[ "${ahead:-0}" -gt 0 ]]; then
+        unpushed_total=$(( unpushed_total + 1 ))
+        unpushed_projects+=("$(project_label "$log")")
+      fi
     fi
   done
 fi
@@ -277,6 +290,12 @@ if (( ${#silent_today[@]} > 0 )); then
   printf ' %s(%s)%s' "$DIM" "$(IFS=,; echo "${silent_today[*]}")" "$RESET"
 fi
 if [[ "$show_git" -eq 1 ]]; then
+  if (( unpushed_total > 0 )); then
+    printf '  ·  %sunpushed: %d%s' "$CYAN" "$unpushed_total" "$RESET"
+    printf ' %s(%s)%s' "$DIM" "$(IFS=,; echo "${unpushed_projects[*]}")" "$RESET"
+  else
+    printf '  ·  %sunpushed: 0%s' "$DIM" "$RESET"
+  fi
   if (( dirty_total > 0 )); then
     printf '  ·  %sdirty trees: %d%s' "$YELLOW" "$dirty_total" "$RESET"
     printf ' %s(%s)%s' "$DIM" "$(IFS=,; echo "${dirty_projects[*]}")" "$RESET"
