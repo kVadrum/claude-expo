@@ -9,7 +9,7 @@
 
 set -u
 
-VERSION="0.1.0"
+VERSION="0.3.0"
 
 root="${HOME}/dev/projects"
 tail_n=8
@@ -70,11 +70,11 @@ fi
 # ANSI — respect NO_COLOR and non-tty.
 if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
   BOLD=$'\033[1m'; DIM=$'\033[2m'
-  RED=$'\033[31m'; YELLOW=$'\033[33m'; GREEN=$'\033[32m'
+  RED=$'\033[31m'; YELLOW=$'\033[33m'; GREEN=$'\033[32m'; CYAN=$'\033[36m'
   RESET=$'\033[0m'
 else
   BOLD=""; DIM="";
-  RED=""; YELLOW=""; GREEN=""
+  RED=""; YELLOW=""; GREEN=""; CYAN=""
   RESET=""
 fi
 
@@ -149,6 +149,7 @@ git_summary() {
   git -C "$dir" rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
 
   local sha subject count window_label dirty dirty_seg=""
+  local unpushed unpushed_seg=""
   if ! sha="$(git -C "$dir" rev-parse --short HEAD 2>/dev/null)"; then
     printf '%sHEAD —%s  %s(no commits)%s\n' "$DIM" "$RESET" "$DIM" "$RESET"
     return 0
@@ -166,14 +167,27 @@ git_summary() {
   local plural=s
   [[ "$count" == "1" ]] && plural=""
 
+  # Unpushed: HEAD ahead of upstream. Silently skipped when there is
+  # no upstream configured (lib/, fresh repo, detached HEAD) — that's
+  # a different shape of "not pushed" and not the one this segment is
+  # trying to surface. The signal here is "the rig committed but the
+  # remote hasn't seen it yet" — a `dev` ahead of `origin/dev` story
+  # that the morning brief was previously blind to.
+  if git -C "$dir" rev-parse --abbrev-ref --symbolic-full-name '@{u}' >/dev/null 2>&1; then
+    unpushed="$(git -C "$dir" rev-list --count '@{u}..HEAD' 2>/dev/null)"
+    if [[ "${unpushed:-0}" -gt 0 ]]; then
+      unpushed_seg=" · ${CYAN}unpushed: ${unpushed}${RESET}${DIM}"
+    fi
+  fi
+
   dirty="$(git -C "$dir" status --porcelain 2>/dev/null | wc -l)"
   if [[ "${dirty:-0}" -gt 0 ]]; then
     dirty_seg=" · ${YELLOW}dirty: ${dirty}${RESET}${DIM}"
   fi
 
-  printf '%sHEAD %s%s  %s· %s commit%s %s%s · %s%s\n' \
+  printf '%sHEAD %s%s  %s· %s commit%s %s%s%s · %s%s\n' \
     "$DIM" "$sha" "$RESET" \
-    "$DIM" "$count" "$plural" "$window_label" "$dirty_seg" "$subject" "$RESET"
+    "$DIM" "$count" "$plural" "$window_label" "$unpushed_seg" "$dirty_seg" "$subject" "$RESET"
 }
 
 # Returns 0 if $1 matches the --projects filter (or if no filter set).
