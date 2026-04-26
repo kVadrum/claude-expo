@@ -48,3 +48,21 @@ timer". README and INDEX bumped. Report: sessions/2026-04-25.md.
 Next: HEAD-vs-pushed split — `git rev-list @{u}..HEAD --count` to
 flag rigs that commit locally but never push, since `dev` ahead of
 `origin/dev` is currently invisible to the brief.
+
+## 2026-04-26  —  continue: morning-brief  —  ~30m / 4c
+morning-brief v0.4.0: unpushed-commit marker. Per-project `HEAD`
+line gains a cyan `· unpushed: N ·` segment when HEAD is ahead of
+upstream (silent skip when no upstream / detached / 0 ahead);
+header summary gains `unpushed: K (proj1, ...)` between silent and
+dirty. Cyan keeps the palette legible (yellow=waiting-on-human,
+green=shipped, red=broken; unpushed is "owes a push"). Walks
+`all_logs` so drill-down still surfaces unpushed work elsewhere;
+single git walk now drives both dirty and unpushed totals. First
+run on the live workspace surfaced claude-expo itself at
+`unpushed: 17` — exact shape the marker was added for. README
+gains a claude-expo example block; INDEX bumped to v0.4.0. Report:
+sessions/2026-04-26.md.
+Next: self-test harness with fixture logs (no upstream / empty
+repo / detached HEAD / dirty modes) so format drift and corner
+cases stop being live-only catches; JSON output mode parked
+behind that.
