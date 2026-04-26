@@ -25,14 +25,16 @@ _(pending first cut)_
   autonomous rig's `ops/autonomous/morning-log.md` across the
   workspace. Walks `~/dev/projects`, discovers every log, prints a
   per-project digest with a header summary of today-active vs
-  today-silent rigs *and* dirty-tree count, a per-project `HEAD`
-  line with short SHA + commit count in the active window + dirty
-  marker, and ANSI highlighting for `skipped` / `pushed` / `error`
-  in the tail. Flags: `--today`, `--since`, `--projects`, `-n`,
-  `--root`, `--no-git`. Bash, no deps, single-file script. Currently
-  v0.3.0. Built to solve the daily papercut of opening six-plus
-  editor tabs for the morning review; v0.3.0 distinguishes a stuck
-  timer from a rig correctly refusing to act on a dirty tree.
+  today-silent rigs, unpushed-branch count, and dirty-tree count; a
+  per-project `HEAD` line with short SHA + commit count in the
+  active window + unpushed + dirty markers; and ANSI highlighting
+  for `skipped` / `pushed` / `error` in the tail. Flags: `--today`,
+  `--since`, `--projects`, `-n`, `--root`, `--no-git`. Bash, no
+  deps, single-file script. Currently v0.4.0. Built to solve the
+  daily papercut of opening six-plus editor tabs for the morning
+  review; v0.3.0 distinguished a stuck timer from a rig correctly
+  refusing to act on a dirty tree, v0.4.0 closes the `dev` ahead of
+  `origin/dev` blind spot.
 
 ## Pre-scaffold / spec stage
 
