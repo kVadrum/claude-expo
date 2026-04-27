@@ -66,3 +66,22 @@ Next: self-test harness with fixture logs (no upstream / empty
 repo / detached HEAD / dirty modes) so format drift and corner
 cases stop being live-only catches; JSON output mode parked
 behind that.
+
+## 2026-04-27  —  continue: morning-brief  —  ~35m / 2c
+morning-brief v0.5.0: fixture-driven self-test harness. 14 cases
+under `test/run-tests.sh` covering empty repo, detached HEAD, no
+upstream, upstream ahead (`unpushed: N`), dirty tree, `--no-git`
+suppression, `--projects` filter (substring + zero-match), `--since`
+validation/filter, `--today` shorthand, and NO_COLOR ANSI absence.
+Each test gets its own tmp `$MB_ROOT`; fixture vocabulary lives in
+`test/lib.sh` (`mb_init_repo`, `mb_seed`, `mb_commit`,
+`mb_attach_upstream`, `mb_detach_head`). First full run 11/14
+green; the three failures shared one fixture bug (morning-log.md
+created before `git init` → untracked → counts as dirty), fixed by
+adding `mb_seed`. README and INDEX bumped, roadmap entry retired.
+Format drift and edge-case regressions stop being live-only catches.
+Report: sessions/2026-04-27.md.
+Next: JSON output mode (`--json`) for piping into other tools, OR
+split `dirty: N` into staged/modified/untracked. JSON is the broader
+enabler; dirty-kinds has the highest current papercut value
+(kemek-blog's `dirty: 18` is mostly untracked log files).
