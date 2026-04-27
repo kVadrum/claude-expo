@@ -30,11 +30,13 @@ _(pending first cut)_
   active window + unpushed + dirty markers; and ANSI highlighting
   for `skipped` / `pushed` / `error` in the tail. Flags: `--today`,
   `--since`, `--projects`, `-n`, `--root`, `--no-git`. Bash, no
-  deps, single-file script. Currently v0.4.0. Built to solve the
+  deps, single-file script. Currently v0.5.0. Built to solve the
   daily papercut of opening six-plus editor tabs for the morning
   review; v0.3.0 distinguished a stuck timer from a rig correctly
-  refusing to act on a dirty tree, v0.4.0 closes the `dev` ahead of
-  `origin/dev` blind spot.
+  refusing to act on a dirty tree, v0.4.0 closed the `dev` ahead of
+  `origin/dev` blind spot, v0.5.0 added a fixture-driven self-test
+  harness (14 cases) so format drift and edge-case regressions stop
+  being live-only catches.
 
 ## Pre-scaffold / spec stage
 

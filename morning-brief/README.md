@@ -2,7 +2,7 @@
 
 One command. Every autonomous rig's morning-log, side by side.
 
-*README v0.4.0*
+*README v0.5.0*
 
 ## What it does
 
@@ -112,12 +112,30 @@ Or run it in place:
 No package manager, no registry. It's ~100 lines of bash; vendor it
 however you like.
 
+## Tests
+
+```
+./test/run-tests.sh
+```
+
+Builds throwaway fixture projects under a tmp `$MB_ROOT`, runs the
+brief against that root, and asserts on the captured output. 14
+cases cover the corner shapes the brief was previously only exposed
+to live in this workspace: empty repo with no commits, detached
+HEAD, no upstream configured, upstream with commits ahead, dirty
+tree, `--no-git` suppression, `--projects` filter (substring +
+zero-match exit), `--since`/`--today` filtering and validation, and
+NO_COLOR ANSI absence.
+
+The harness uses zero deps — pure bash + git, with each test getting
+its own tmpdir so state never bleeds. See `test/lib.sh` for the
+fixture-builder vocabulary (`mb_init_repo`, `mb_seed`, `mb_commit`,
+`mb_attach_upstream`, `mb_detach_head`).
+
 ## Roadmap (informal)
 
 Next cycle ideas, in rough priority order:
 
-- A self-test harness with fixture logs, so format changes don't
-  silently regress the tail.
 - JSON output mode for piping into other tools.
 - Distinguish dirty kinds — modified-tracked vs untracked vs staged
   — when the count alone is too coarse to triage from.
@@ -128,10 +146,10 @@ Next cycle ideas, in rough priority order:
 
 ## Status
 
-v0.4.0. Works against the 6 morning-logs currently in
-`~/dev/projects/`. The v0.4.0 addition is the unpushed-commit
-marker — per-project cyan segment plus header summary — closing
-the `dev` ahead of `origin/dev` blind spot.
+v0.5.0. Works against the 6 morning-logs currently in
+`~/dev/projects/`. The v0.5.0 addition is a fixture-driven self-test
+harness covering 14 corner cases — format drift and edge-case
+regressions are no longer live-only catches.
 
 ---
 
