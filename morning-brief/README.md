@@ -99,8 +99,10 @@ counts are both suppressed by `--no-git`.
 
 ## Install
 
+From inside this directory (so `$(pwd)` resolves correctly):
+
 ```
-ln -s "$PWD/bin/morning-brief" ~/.local/bin/morning-brief
+ln -s "$(pwd)/bin/morning-brief" ~/.local/bin/morning-brief
 ```
 
 Or run it in place:
@@ -109,8 +111,8 @@ Or run it in place:
 ./bin/morning-brief
 ```
 
-No package manager, no registry. It's ~100 lines of bash; vendor it
-however you like.
+No package manager, no registry. Pure bash, ~345 lines plus a self-
+test harness; vendor it however you like.
 
 ## Tests
 
